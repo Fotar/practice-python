@@ -10,9 +10,33 @@ description:
     Also adds a row that contains the text 'Selective Dynamics' to be added to the top of the data output.
     Shifts the line that says 'direct' by 3 spaces
 """
+"""
+reads the lines from the 'direct' line, and counts the amount of lines with only zeroes
+to find the size of the test
+"""
+def getTestSize(linesList, start):
+    size = 0
+    for i in range(start, len(linesList)):
+        tempLine = linesList[i].split()
+        if (checkZeroLine(tempLine[2])):
+            size+= 1
+        else:
+            break
+    print(size)
+    return size
 
+"""
+checks to see if an entry is only zeroes and periods, this is expandable for any
+amount of sig figs
+"""
+def checkZeroLine(entry):
+    for i in range(0, len(entry)):
+        if entry[i] != '0' and entry[i] != '.' and entry[i] != '\n':
+            return False
+    return True
 
-file = open('testinput.txt', 'r')
+inputFile = "testinput.txt"
+file = open(inputFile, 'r')
 lines = []
 
 for line in file:
@@ -23,20 +47,7 @@ testSize = 0
 dataFlag = False
 directLocation = 0
 
-"""
-reads the lines from the 'direct' line, and counts the amount of lines with 0.0000000
-to find the size of the test
-"""
-def getTestSize(linesList, start):
-    size = 0
-    for i in range(start, len(linesList)):
-        tempLine = linesList[i].split()
-        if (tempLine[2] == "0.000000000"):
-            size+= 1
-        else:
-            break
-    print(size)
-    return size
+
 
 
 for i in range(0, len(lines)):
@@ -47,16 +58,17 @@ for i in range(0, len(lines)):
         dataFlag = True
         testSize = (2 * getTestSize(lines, i + 1))
 
-    elif(dataFlag):
-        if(testSize > 0):
+    elif(dataFlag):             #if we're up to the data output section
+        if(testSize > 0):       #this inserts all the F rows, and counts down
             lines[i] = lines[i].strip('\n') + "\t\t\tF   F   F\n"
             testSize -= 1
-        else:
+        else:                   #once the counter for the F rows is up, put in all the T rows
             lines[i] = lines[i].strip('\n') + "\t\t\tT   T   T\n"
 
 lines.insert(directLocation, "Selective Dynamics\n")
+#insert the selective dynamics row at the end so it doesn't muddle up the lines array order
 
-fileOut = open('testOutput.txt', 'w')
-for j in range(0, len(lines)):
+fileOut = open('testOutput.txt', 'w')   #write all the changes, change this to inputFile variable
+for j in range(0, len(lines)):          #when Patrick is happy with the script
     fileOut.write(lines[j])
 fileOut.close()
